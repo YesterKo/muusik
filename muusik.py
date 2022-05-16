@@ -3,14 +3,16 @@ import asyncio
 import os
 from dotenv import load_dotenv
 
-sample_length = 5
+global recorder
+
+sample_length = 10
 
 
 
 
 
 load_dotenv()
-bot = discord.Bot(debug_guilds=[637793926593642508])
+bot = discord.Bot(debug_guilds=[637793926593642508,884501163502878791])
 connections = {}
 
 @bot.event
@@ -52,7 +54,7 @@ async def once_done(sink: discord.sinks.Sink, channel: discord.TextChannel, *arg
         print(x)
     
     with open('heli.wav', 'w+b') as fail:
-        fail.write(sink.audio_data[308530101518336012].file.read())
+        fail.write(sink.audio_data[recorder].file.read())
         
     await channel.send(f"finished recording audio for: {', '.join(recorded_users)}.", files=files) # Saada sõnum failidega
 
@@ -89,6 +91,19 @@ async def recognize(ctx):
     await ctx.respond("waited 5 sec")
     
     await stop_recording(ctx)
+    
+@bot.command()
+async def set_recorder(ctx):
+    global recorder
+    recorder = ctx.author.id
+    await ctx.respond(recorder)
+    print(recorder)
+    
+@bot.command()
+async def get_recorder(ctx):
+    global recorder
+    print(recorder)
+    await ctx.respond(recorder)
 
 
 bot.run(os.getenv('TOKEN'))
